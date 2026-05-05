@@ -8,7 +8,7 @@ export function ArtistSummary({ artist }: { artist: Artist }) {
       <div className="mt-4 grid gap-2 text-sm">
         <div className="flex justify-between border-t border-black pt-2">
           <span>Total Score</span>
-          <span>{artist.totalScore}</span>
+          <span>{artist.totalScore}/25</span>
         </div>
         <div className="flex justify-between border-t border-black pt-2">
           <span>Current Tier</span>

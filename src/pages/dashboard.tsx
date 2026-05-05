@@ -3,7 +3,6 @@ import { useEffect, useMemo, useState } from 'react';
 import { DevToolsPanel } from '@/components/DevToolsPanel';
 import {
   applyTaskCompletion,
-  calculateArtistTier,
   cloneTasks,
   DEFAULT_ARTIST,
   DEFAULT_PILLAR_SCORES,

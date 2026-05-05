@@ -10,7 +10,7 @@ export function PillarScoreCards({ pillarScores }: { pillarScores: PillarScores 
         {pillars.map((pillar) => (
           <div key={pillar} className="border border-black p-3 text-sm">
             <div className="text-xs uppercase tracking-[0.15em]">{pillar}</div>
-            <div className="mt-2 text-xl">{pillarScores[pillar]}</div>
+            <div className="mt-2 text-xl">{pillarScores[pillar]}/5</div>
           </div>
         ))}
       </div>

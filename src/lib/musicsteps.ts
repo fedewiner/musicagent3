@@ -27,7 +27,7 @@ export const SEED_TASKS: Task[] = [
 ];
 
 export function calculateArtistTier(score: number): Tier {
-  if (score >= 20) return 'HIGH';
+  if (score >= 26) return 'HIGH';
   if (score >= 10) return 'MID';
   return 'LOW';
 }
