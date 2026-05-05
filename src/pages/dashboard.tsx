@@ -76,8 +76,8 @@ export default function DashboardPage() {
           </Link>
           <div className="font-mono text-3xl uppercase tracking-[0.08em]">{artist.name}</div>
           <div className="flex flex-wrap gap-6 text-sm">
-            <span>Score: {artist.totalScore}/50</span>
-            <span>Tier: {calculateArtistTier(artist.totalScore)}</span>
+            <span>Score: {artist.totalScore}/25</span>
+            <span>Tier: {artist.tier}</span>
           </div>
         </header>
 
@@ -85,7 +85,7 @@ export default function DashboardPage() {
           {PILLARS.map((pillar) => (
             <div key={pillar} className="border border-black p-3 text-sm">
               <div className="text-xs uppercase tracking-[0.2em]">{pillar}</div>
-              <div className="mt-2 font-mono text-xl">{pillarScores[pillar]}/10</div>
+              <div className="mt-2 font-mono text-xl">{pillarScores[pillar]}/5</div>
             </div>
           ))}
         </section>

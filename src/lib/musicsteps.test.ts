@@ -6,25 +6,26 @@ declare const it: any;
 declare const expect: any;
 
 describe('calculateArtistTier', () => {
-  it('returns LOW below 30', () => {
-    expect(calculateArtistTier(29)).toBe('LOW');
+  it('returns LOW below 10', () => {
+    expect(calculateArtistTier(0)).toBe('LOW');
+    expect(calculateArtistTier(9)).toBe('LOW');
   });
 
-  it('returns MID from 30 to 44', () => {
-    expect(calculateArtistTier(30)).toBe('MID');
-    expect(calculateArtistTier(44)).toBe('MID');
+  it('returns MID from 10 to 19', () => {
+    expect(calculateArtistTier(10)).toBe('MID');
+    expect(calculateArtistTier(19)).toBe('MID');
   });
 
-  it('returns HIGH from 45 to 50', () => {
-    expect(calculateArtistTier(45)).toBe('HIGH');
-    expect(calculateArtistTier(50)).toBe('HIGH');
+  it('returns HIGH from 20 to 25', () => {
+    expect(calculateArtistTier(20)).toBe('HIGH');
+    expect(calculateArtistTier(25)).toBe('HIGH');
   });
 });
 
 const baseArtist: Artist = {
   id: 'artist-1',
   name: 'Test Artist',
-  totalScore: 30,
+  totalScore: 10,
   tier: 'MID',
   releaseGapWeeks: 0,
   followers: 0,
