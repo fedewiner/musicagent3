@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/router';
 import { calculateArtistTier } from '@/lib/musicsteps';
 import { loadState, saveState } from '@/lib/storage';
@@ -115,11 +115,6 @@ export default function OnboardingPage() {
 
   const [isSaving, setIsSaving] = useState(false);
 
-  useEffect(() => {
-    const state = loadState();
-    setArtistName(state.artist.name === 'Musicsteps Artist' ? '' : state.artist.name);
-  }, []);
-
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (isSaving) return;
@@ -139,15 +134,15 @@ export default function OnboardingPage() {
     const tier = calculateArtistTier(totalScore);
     const lastReleaseDate = deriveLastReleaseDate(releaseAnswer);
     const releaseGapWeeks = deriveReleaseGapWeeks(releaseAnswer);
-
     const currentState = loadState();
+
     const updatedArtist: Artist = {
       ...currentState.artist,
       name: artistName.trim(),
       totalScore,
       tier,
       releaseGapWeeks,
-      followers: 0,
+      followers: currentState.artist.followers,
       lastReleaseDate,
     };
 
