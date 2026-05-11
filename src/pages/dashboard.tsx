@@ -15,7 +15,7 @@ import {
   simulateNewSpotifyRelease,
   simulateReleaseGap,
 } from '@/lib/musicsteps';
-import { hasCompletedOnboarding, loadState, saveState } from '@/lib/storage';
+import { hasCompletedOnboarding, loadState, saveState, resetData } from '@/lib/storage';
 import type { Artist, PillarScores, Task } from '@/types/musicsteps';
 
 const PRIORITY_STYLES: Record<Task['priority'], string> = {
@@ -87,6 +87,13 @@ export default function DashboardPage() {
     setPillarScores(updated.pillarScores);
   };
 
+  const handleResetData = () => {
+    if (window.confirm('Reset all data and start a new profile? This cannot be undone.')) {
+      resetData();
+      router.push('/');
+    }
+  };
+
   if (!ready) {
     return (
       <main className="min-h-screen bg-white flex items-center justify-center">
@@ -101,9 +108,25 @@ export default function DashboardPage() {
 
         {/* ── Header ── */}
         <header className="grid gap-3 border border-black p-5">
-          <Link href="/" className="text-xs uppercase tracking-[0.2em] text-gray-400">
-            Musicsteps
-          </Link>
+          <div className="flex items-center justify-between">
+            <Link href="/" className="text-xs uppercase tracking-[0.2em] text-gray-400 hover:text-black transition-colors">
+              Musicsteps
+            </Link>
+            <div className="flex gap-2">
+              <Link
+                href="/"
+                className="text-xs uppercase tracking-[0.2em] border border-gray-300 px-3 py-1.5 hover:border-black transition-colors"
+              >
+                ← Back
+              </Link>
+              <button
+                onClick={handleResetData}
+                className="text-xs uppercase tracking-[0.2em] border border-gray-300 px-3 py-1.5 hover:border-black transition-colors text-left"
+              >
+                Reset
+              </button>
+            </div>
+          </div>
           <div className="font-mono text-3xl uppercase tracking-[0.08em]">{artist.name}</div>
           {artist.pitch && (
             <p className="text-sm text-gray-500 italic">"{artist.pitch}"</p>
