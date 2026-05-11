@@ -21,6 +21,10 @@ export interface Artist {
   releaseGapWeeks: number;
   followers: number;
   lastReleaseDate?: string | Date | null;
+  deezerArtistId?: string;
+  deezerSyncedAt?: string;
+  deezerFanCount?: number;
+  deezerAlbumCount?: number;
 }
 
 export interface Task {
