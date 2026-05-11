@@ -115,15 +115,15 @@ export default function DashboardPage() {
             <div className="flex gap-2">
               <Link
                 href="/"
-                className="text-xs uppercase tracking-[0.2em] border border-gray-300 px-3 py-1.5 hover:border-black transition-colors"
+                className="text-xs uppercase tracking-[0.2em] border border-gray-400 px-3 py-1.5 text-gray-600 hover:border-black hover:text-black transition-colors"
               >
-                ← Back
+                ← Home
               </Link>
               <button
                 onClick={handleResetData}
-                className="text-xs uppercase tracking-[0.2em] border border-gray-300 px-3 py-1.5 hover:border-black transition-colors text-left"
+                className="text-xs uppercase tracking-[0.2em] border border-red-300 px-3 py-1.5 text-red-600 hover:border-red-600 hover:bg-red-50 transition-colors"
               >
-                Reset
+                Reset Profile
               </button>
             </div>
           </div>
