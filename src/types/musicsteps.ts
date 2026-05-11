@@ -1,5 +1,6 @@
 export type Pillar = 'Professional' | 'Release' | 'Visibility' | 'Engagement' | 'Live';
 export type Tier = 'LOW' | 'MID' | 'HIGH';
+export type Priority = 'Critical' | 'High' | 'Medium';
 
 export interface PillarScores {
   Professional: number;
@@ -12,6 +13,9 @@ export interface PillarScores {
 export interface Artist {
   id: string;
   name: string;
+  genre: string;
+  pitch: string;
+  socialPlatform: 'Instagram' | 'TikTok';
   totalScore: number;
   tier: Tier;
   releaseGapWeeks: number;
@@ -21,11 +25,15 @@ export interface Artist {
 
 export interface Task {
   id: string;
+  level: number;
   title: string;
   pillar: Pillar;
-  priority: 'Critical' | 'High' | 'Medium';
+  priority: Priority;
   tier: Tier;
   completed: boolean;
   isCompleted?: boolean;
   scoreValue: number;
+  action: string;
+  whyItMatters: string;
+  expectedOutcome: string;
 }

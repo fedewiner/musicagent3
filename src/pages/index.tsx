@@ -1,16 +1,21 @@
-import Link from 'next/link';
+import { useEffect } from 'react';
+import { useRouter } from 'next/router';
+import { hasCompletedOnboarding } from '@/lib/storage';
 
 export default function HomePage() {
+  const router = useRouter();
+
+  useEffect(() => {
+    if (hasCompletedOnboarding()) {
+      router.replace('/dashboard');
+    } else {
+      router.replace('/onboarding');
+    }
+  }, [router]);
+
   return (
-    <main className="min-h-screen bg-white px-4 py-6 text-black">
-      <div className="max-w-xl border border-black p-4">
-        <h1 className="text-4xl font-semibold">Musicsteps</h1>
-        <p className="mt-4 text-sm">A minimal MVP for tracking artist progress with local mock data.</p>
-        <p className="mt-2 text-xs uppercase tracking-[0.15em]">Prototype / local data only</p>
-        <Link className="mt-6 inline-block border border-black px-3 py-2 text-sm" href="/dashboard">
-          Go to dashboard
-        </Link>
-      </div>
+    <main className="min-h-screen bg-white flex items-center justify-center">
+      <div className="text-xs uppercase tracking-[0.2em] text-gray-400">Loading…</div>
     </main>
   );
 }
