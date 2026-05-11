@@ -131,6 +131,11 @@ export default function DashboardPage() {
           {artist.pitch && (
             <p className="text-sm text-gray-500 italic">"{artist.pitch}"</p>
           )}
+          {artist.deezerArtistId && (
+            <div className="text-xs uppercase tracking-[0.15em] text-gray-500">
+              ✓ Synced with Deezer {artist.deezerSyncedAt ? `· ${new Date(artist.deezerSyncedAt).toLocaleDateString()}` : ''}
+            </div>
+          )}
 
           <div className="flex flex-wrap items-center gap-6 text-sm">
             <div>
@@ -244,11 +249,6 @@ export default function DashboardPage() {
         </section>
       </div>
 
-      <DevToolsPanel
-        onSimulateNewRelease={handleSimulateNewRelease}
-        onSimulateReleaseGap={handleSimulateReleaseGap}
-        onSimulateFollowerVerification={handleSimulateFollowerVerification}
-      />
     </main>
   );
 }

@@ -2,13 +2,16 @@ import { useState } from 'react';
 import { useRouter } from 'next/router';
 import { calculateArtistTier } from '@/lib/musicsteps';
 import { loadState, saveState } from '@/lib/storage';
+import { validateDeezerUrl, mapDeezerDataToPillars, type DeezerArtist } from '@/lib/deezer';
 import type { Artist, PillarScores } from '@/types/musicsteps';
 
 const GENRES = ['Pop', 'Hip-Hop', 'Rock', 'Electronic', 'R&B', 'Jazz', 'Classical', 'Other'] as const;
 const SOCIAL_PLATFORMS = ['Instagram', 'TikTok'] as const;
+const AUTH_METHODS = ['Email', 'Google', 'Apple'] as const;
 
 type Genre = (typeof GENRES)[number];
 type SocialPlatform = (typeof SOCIAL_PLATFORMS)[number];
+type AuthMethod = (typeof AUTH_METHODS)[number];
 type ReleaseAnswer = 'never' | 'over6weeks' | 'within6weeks';
 type ProfessionalAnswer = 'no' | 'partial' | 'yes';
 type VisibilityAnswer = 'none' | 'small' | 'growing';
@@ -115,6 +118,58 @@ export default function OnboardingPage() {
   const [liveAnswer, setLiveAnswer] = useState<LiveAnswer | ''>('');
   const [isSaving, setIsSaving] = useState(false);
 
+  // Deezer integration state
+  const [deezerUrl, setDeezerUrl] = useState('');
+  const [deezerData, setDeezerData] = useState<DeezerArtist | null>(null);
+  const [deezerLoading, setDeezerLoading] = useState(false);
+  const [deezerError, setDeezerError] = useState<string | null>(null);
+
+  const handleSyncDeezer = async (url: string) => {
+    if (!url.trim()) return;
+
+    setDeezerError(null);
+
+    if (!validateDeezerUrl(url)) {
+      setDeezerError('Invalid Deezer link. Try: https://www.deezer.com/artist/123456');
+      return;
+    }
+
+    setDeezerLoading(true);
+    try {
+      const response = await fetch('/api/deezer-artist', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: url.trim() }),
+      });
+
+      const result = (await response.json()) as {
+        success: boolean;
+        artist?: DeezerArtist;
+        error?: string;
+      };
+
+      if (!result.success) {
+        const errorMsg = result.error || 'Failed to fetch artist data';
+        setDeezerError(errorMsg);
+        setDeezerData(null);
+        return;
+      }
+
+      setDeezerData(result.artist || null);
+      if (result.artist) {
+        const mapped = mapDeezerDataToPillars(result.artist);
+        setVisibilityAnswer(mapped.visibilityAnswer);
+        setReleaseAnswer(mapped.releaseAnswer);
+      }
+    } catch (error) {
+      console.error('Deezer sync error:', error);
+      setDeezerError('Network error. Check your connection.');
+      setDeezerData(null);
+    } finally {
+      setDeezerLoading(false);
+    }
+  };
+
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (isSaving) return;
@@ -144,6 +199,10 @@ export default function OnboardingPage() {
       tier,
       releaseGapWeeks: deriveReleaseGapWeeks(releaseAnswer),
       lastReleaseDate: deriveLastReleaseDate(releaseAnswer),
+      deezerArtistId: deezerData?.id.toString(),
+      deezerSyncedAt: deezerData ? new Date().toISOString() : undefined,
+      deezerFanCount: deezerData?.nb_fan,
+      deezerAlbumCount: deezerData?.nb_album,
     };
 
     saveState({ artist: updatedArtist, pillarScores, tasks: currentState.tasks });
@@ -222,6 +281,63 @@ export default function OnboardingPage() {
                 ))}
               </div>
             </fieldset>
+          </div>
+
+          {/* ── Quick Sync with Deezer ── */}
+          <div className="border-2 border-blue-500 bg-blue-50 p-5 space-y-4">
+            <div className="text-xs uppercase tracking-[0.2em] text-blue-600 font-semibold">🔗 Quick Sync (Optional)</div>
+            <p className="text-xs text-blue-700">Connect your Deezer artist profile to instantly auto-populate your visibility and release scores.</p>
+
+            <div>
+              <label htmlFor="deezerUrl" className="block text-sm uppercase tracking-[0.15em] text-blue-900">Deezer Artist Link</label>
+              <div className="mt-2 flex gap-2">
+                <input
+                  id="deezerUrl"
+                  type="text"
+                  value={deezerUrl}
+                  onChange={(e) => setDeezerUrl(e.target.value)}
+                  disabled={deezerLoading}
+                  className={`flex-1 border bg-white px-3 py-2 text-sm outline-none ${
+                    deezerError ? 'border-red-400' : 'border-blue-300'
+                  } disabled:opacity-60`}
+                  placeholder="https://www.deezer.com/artist/123456"
+                />
+                <button
+                  type="button"
+                  onClick={() => handleSyncDeezer(deezerUrl)}
+                  disabled={deezerLoading || !deezerUrl.trim()}
+                  className="border border-blue-500 px-4 py-2 text-xs uppercase tracking-[0.15em] bg-blue-500 text-white disabled:opacity-60 disabled:cursor-not-allowed hover:bg-blue-600"
+                >
+                  {deezerLoading ? 'Syncing…' : 'Sync'}
+                </button>
+              </div>
+              {deezerError && <p className="mt-1 text-xs text-red-600">{deezerError}</p>}
+            </div>
+
+            {/* Deezer Preview Card */}
+            {deezerData && (
+              <div className="border border-blue-300 bg-blue-100 p-4 text-sm">
+                <div className="flex items-start gap-3">
+                  <div className="text-lg">✓</div>
+                  <div className="flex-1">
+                    <div className="font-semibold text-blue-900">{deezerData.name}</div>
+                    <div className="mt-2 grid grid-cols-2 gap-3 text-xs">
+                      <div>
+                        <span className="text-blue-600">Fans:</span>
+                        <div className="font-mono text-sm text-blue-900">{deezerData.nb_fan.toLocaleString()}</div>
+                      </div>
+                      <div>
+                        <span className="text-blue-600">Albums:</span>
+                        <div className="font-mono text-sm text-blue-900">{deezerData.nb_album}</div>
+                      </div>
+                    </div>
+                    <div className="mt-2 text-[10px] text-blue-600 uppercase tracking-[0.12em]">
+                      ✓ Visibility and Release updated
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* ── Diagnostic ── */}
